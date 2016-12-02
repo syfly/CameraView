@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.camara.util.CamParaUtil;
+import org.camara.util.CameraUtils;
 import org.camara.util.FileUtil;
 import org.camara.util.ImageUtil;
 
@@ -25,8 +26,15 @@ public class CameraInterface {
 	private Camera.Parameters mParams;
 	private boolean isPreviewing = false;
 	private float mPreviwRate = -1f;
+	public int mCameraPreviewFps;
+	public int mCameraPreviewHeight;
+	public int mCameraPreviewWidth;
 	private static CameraInterface mCameraInterface;
-
+	// Requested values; actual may differ.
+    private static final int REQ_CAMERA_WIDTH = 1280;
+    private static final int REQ_CAMERA_HEIGHT = 720;
+    private static final int REQ_CAMERA_FPS = 30;
+    
 	public interface CamOpenOverCallback{
 		public void cameraHasOpened();
 	}
@@ -45,17 +53,56 @@ public class CameraInterface {
 	 */
 	public void doOpenCamera(CamOpenOverCallback callback){
 		Log.i(TAG, "Camera open....");
+		Camera.CameraInfo info = new Camera.CameraInfo();
+		int numCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numCameras; i++) {
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                mCamera = Camera.open(i);
+                break;
+            }
+        }
 		if(mCamera == null){
 			mCamera = Camera.open();
-			Log.i(TAG, "Camera open over....");
+			Log.d(TAG, "No front-facing camera found; opening default");
+		}
+//		else{
+//			Log.i(TAG, "Camera open 异常!!!");
+//			doStopCamera();
+//		}
+		if (mCamera != null) {
+			Camera.Parameters parms = mCamera.getParameters();
+            CameraUtils.choosePreviewSize(parms, REQ_CAMERA_WIDTH, REQ_CAMERA_HEIGHT);
+            int thousandFps = CameraUtils.chooseFixedPreviewFps(parms, REQ_CAMERA_FPS * 1000);
+            
+            parms.setRecordingHint(true);
+
+            mCamera.setParameters(parms);
+            
+            int[] fpsRange = new int[2];
+            Camera.Size mCameraPreviewSize = parms.getPreviewSize();
+            parms.getPreviewFpsRange(fpsRange);
+            String previewFacts = mCameraPreviewSize.width + "x" + mCameraPreviewSize.height;
+            if (fpsRange[0] == fpsRange[1]) {
+                previewFacts += " @" + (fpsRange[0] / 1000.0) + "fps";
+            } else {
+                previewFacts += " @[" + (fpsRange[0] / 1000.0) +
+                        " - " + (fpsRange[1] / 1000.0) + "] fps";
+            }
+            Log.i(TAG, "Camera config: " + previewFacts);
+
+            mCameraPreviewWidth = mCameraPreviewSize.width;
+            mCameraPreviewHeight = mCameraPreviewSize.height;
+            mCameraPreviewFps = thousandFps;
+//            mMainHandler.sendCameraParams(mCameraPreviewWidth, mCameraPreviewHeight, thousandFps / 1000.0f);
+            
 			if(callback != null){
 				callback.cameraHasOpened();
 			}
-		}else{
+		} else{
 			Log.i(TAG, "Camera open 异常!!!");
 			doStopCamera();
 		}
-			
 	
 	}
 	/**使用Surfaceview开启预览

@@ -49,7 +49,7 @@ public class RenderHelper {
         private FlatShadedProgram mProgram;
         
         // Orthographic projection matrix.
-        private float[] mDisplayProjectionMatrix = new float[16];
+        public float[] mDisplayProjectionMatrix = new float[16];
 
         private final Drawable2d mTriDrawable = new Drawable2d(Drawable2d.Prefab.TRIANGLE);
         private final Drawable2d mRectDrawable = new Drawable2d(Drawable2d.Prefab.RECTANGLE);
@@ -200,7 +200,7 @@ public class RenderHelper {
             
             mRect.setScale(width, height);
             mRect.setPosition(width/2, height/2);
-            //mRect.setRotation(rotAngle);
+            mRect.setRotation(90);
             
             // Set initial shape size / position / velocity based on window size.  Movement
             // has the same "feel" on all devices, but the actual path will vary depending
@@ -362,8 +362,8 @@ public class RenderHelper {
             // explode if given "strange" dimensions, e.g. a width that is not a multiple
             // of 16.  We can box it as needed to preserve dimensions.
             final int BIT_RATE = 4000000;   // 4Mbps
-            final int VIDEO_WIDTH = 1280;
-            final int VIDEO_HEIGHT = 720;
+            final int VIDEO_WIDTH = 1080;
+            final int VIDEO_HEIGHT = 1920;
 //            int windowWidth = mWindowSurface.getWidth();
 //            int windowHeight = mWindowSurface.getHeight();
             float windowAspect = (float) windowHeight / (float) windowWidth;
