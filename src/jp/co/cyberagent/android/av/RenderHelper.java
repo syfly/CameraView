@@ -73,6 +73,7 @@ public class RenderHelper {
         public int mFramebuffer;
         private int mDepthBuffer;
         public FullFrameRect mFullScreen;
+        public FullFrameRect mFullScreen2;
         
         // Used for recording.
         private File mOutputFile;

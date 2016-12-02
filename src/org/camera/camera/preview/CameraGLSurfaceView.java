@@ -10,10 +10,12 @@ import javax.microedition.khronos.opengles.GL10;
 
 
 
+
 import jp.co.cyberagent.android.av.RenderHelper;
 
 import org.camera.camera.CameraInterface;
 
+import com.android.grafika.gles.FullFrameRect;
 import com.android.grafika.gles.GlUtil;
 import com.android.grafika.gles.Texture2dProgram;
 
@@ -75,7 +77,7 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// TODO Auto-generated method stub
-		Log.i(TAG, "onSurfaceCreated...");
+		Log.i(TAG, "onSurfaceCreated..." + getId());
 		mTextureID = createTextureID();
 		mSurface = new SurfaceTexture(mTextureID);
 		mSurface.setOnFrameAvailableListener(this);
@@ -91,7 +93,7 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		// TODO Auto-generated method stub
-		Log.i(TAG, "onSurfaceChanged...");
+		Log.i(TAG, "onSurfaceChanged..." + getId());
 		GLES20.glViewport(0, 0, width, height);
 		if(!CameraInterface.getInstance().isPreviewing()){
 			CameraInterface.getInstance().doStartPreview(mSurface, 1.33f);
@@ -150,13 +152,18 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
 	             GLES20.glViewport(0, 0, 640, 720);
 	             //mRenderHelper.mFullScreen.drawFrame(mOffscreenTexture, mIdentityMatrix);
 	             //mFilter.onDraw(mRenderHelper.mOffscreenTexture, mGLCubeBuffer, mGLTextureBuffer);
-	             mRenderHelper.mFullScreen.drawFrame(mRenderHelper.mOffscreenTexture, mRenderHelper.mIdentityMatrix);
+	             if (mRenderHelper.mFullScreen2 == null) {
+	            	 mRenderHelper.mFullScreen2 = new FullFrameRect(
+		                     new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_2D));
+	             }
+	             GlUtil.checkGlError("ooo");
+	             mRenderHelper.mFullScreen2.drawFrame(mRenderHelper.mOffscreenTexture, mRenderHelper.mIdentityMatrix);
 	             mRenderHelper.mInputWindowSurface.setPresentationTime(System.nanoTime());
 	             mRenderHelper.mInputWindowSurface.swapBuffers();
 
 	             // Restore previous values.
-	             GLES20.glViewport(0, 0, -1, -1);
-	             
+	             //GLES20.glViewport(0, 0, -1, -1);
+	             GlUtil.checkGlError("ooo1");
 	             
 	             view.eglMakeCurrent();
 	        }

@@ -289,6 +289,9 @@ public class Texture2dProgram {
             float[] texMatrix, FloatBuffer texBuffer, int textureId, int texStride) {
         GlUtil.checkGlError("draw start");
         
+        if (!GLES20.glIsProgram(mProgramHandle)) {
+        	Log.d(TAG, "mProgramHandle is not grogram mProgramHandle=" + mProgramHandle + " ");
+        }
         // Select the program.
         GLES20.glUseProgram(mProgramHandle);
         GlUtil.checkGlError("glUseProgram00" + mProgramHandle);
