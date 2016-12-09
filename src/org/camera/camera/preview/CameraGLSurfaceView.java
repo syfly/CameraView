@@ -3,7 +3,10 @@ package org.camera.camera.preview;
 import java.io.File;
 
 import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
+
+
 
 
 
@@ -15,6 +18,7 @@ import jp.co.cyberagent.android.av.RenderHelper;
 
 import org.camera.camera.CameraInterface;
 
+import com.android.grafika.gles.FlatShadedProgram;
 import com.android.grafika.gles.FullFrameRect;
 import com.android.grafika.gles.GlUtil;
 import com.android.grafika.gles.Texture2dProgram;
@@ -91,7 +95,7 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
         }
 	}
 	@Override
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
+	public void onSurfaceChanged(GL gl, int width, int height) {
 		// TODO Auto-generated method stub
 		Log.i(TAG, "onSurfaceChanged..." + getId());
 		mWidth = width;
@@ -109,7 +113,7 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
 
 	}
 	@Override
-	public void onDrawFrame(GL10 gl) {
+	public void onDrawFrame(GL gl) {
 		// TODO Auto-generated method stub
 		Log.i(TAG, "onDrawFrame...");
 		GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -121,7 +125,7 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
 	}
 	
 	@Override
-	public void onDrawFrame(GL10 gl, GLSurfaceView view) {
+	public void onDrawFrame(GL gl, GLSurfaceView view) {
 		Log.i(TAG, "onDrawFrame...");
 		GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -136,10 +140,12 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
 	        
 	       
 
+	        mRenderHelper.mFullScreen.drawFrame(mRenderHelper.mOffscreenTexture, mRenderHelper.mIdentityMatrix);
+	        view.eglSwap();
 	        
 	        // Blit to encoder.
 	        if (mRecordingEnabled && mRenderHelper.mVideoEncoder != null) {
-	        	Log.d(TAG, "onDrawFrame videoencoder.");
+	        	Log.d(TAG, "onDrawFrame videoen coder.");
 	        	 mRenderHelper.mVideoEncoder.frameAvailableSoon();
 	             mRenderHelper.mInputWindowSurface.makeCurrent();
 	             //mRenderHelper.initFrameRect();
@@ -150,15 +156,19 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
 //	             GLES20.glViewport(mRenderHelper.mVideoRect.left, mRenderHelper.mVideoRect.top,
 //	             		mRenderHelper.mVideoRect.width(), mRenderHelper.mVideoRect.height());
 	             
-	             //GLES20.glViewport(437, 0, 842, 720);
+	             GLES20.glViewport(0, 0, 1080, 1920);
 	             //mRenderHelper.mFullScreen.drawFrame(mOffscreenTexture, mIdentityMatrix);
 	             //mFilter.onDraw(mRenderHelper.mOffscreenTexture, mGLCubeBuffer, mGLTextureBuffer);
 	             if (mRenderHelper.mFullScreen2 == null) {
 	            	 mRenderHelper.mFullScreen2 = new FullFrameRect(
 		                     new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_2D));
 	             }
+	             if (mRenderHelper.mProgram == null) {
+	            	 mRenderHelper.mProgram = new FlatShadedProgram();
+	             }
 	             GlUtil.checkGlError("ooo");
-	             mRenderHelper.mFullScreen2.drawFrame(mRenderHelper.mOffscreenTexture, mRenderHelper.mIdentityMatrix);
+	             mRenderHelper.mTri.draw(mRenderHelper.mProgram, mRenderHelper.mDisplayProjectionMatrix);
+	             //mRenderHelper.mFullScreen.drawFrame(mRenderHelper.mOffscreenTexture, mRenderHelper.mIdentityMatrix);
 	             mRenderHelper.mInputWindowSurface.setPresentationTime(System.nanoTime());
 	             mRenderHelper.mInputWindowSurface.swapBuffers();
 
@@ -169,9 +179,10 @@ public class CameraGLSurfaceView extends GLSurfaceView implements SurfaceTexture
 	             view.eglMakeCurrent();
 	        }
 	        
-	        mRenderHelper.mFullScreen.drawFrame(mRenderHelper.mOffscreenTexture, mRenderHelper.mIdentityMatrix);
+	       
+	        
 	        //mFilter.onDraw(mRenderHelper.mOffscreenTexture, mGLCubeBuffer, mGLTextureBuffer);
-	        view.eglSwap();
+	       
 	        
 	        Log.d(TAG, "onDrawFrame end mGLTextureId" + mRenderHelper.mOffscreenTexture);
         }

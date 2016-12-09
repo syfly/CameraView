@@ -46,7 +46,7 @@ public class RenderHelper {
         private volatile SurfaceHolder mSurfaceHolder;  // may be updated by UI thread
         private EglCore mEglCore;
         private WindowSurface mWindowSurface;
-        private FlatShadedProgram mProgram;
+        public FlatShadedProgram mProgram;
         
         // Orthographic projection matrix.
         public float[] mDisplayProjectionMatrix = new float[16];
@@ -56,7 +56,7 @@ public class RenderHelper {
 //        private final ScaledDrawable2d mRectDrawable2 =
 //                new ScaledDrawable2d(Drawable2d.Prefab.RECTANGLE);
         // One spinning triangle, one bouncing rectangle, and four edge-boxes.
-        private Sprite2d mTri;
+        public Sprite2d mTri;
         public Sprite2d mRect;
         private Sprite2d mEdges[];
         private Sprite2d mRecordRect;
@@ -391,7 +391,7 @@ public class RenderHelper {
             } catch (IOException ioe) {
                 throw new RuntimeException(ioe);
             }
-            mInputWindowSurface = new WindowSurface(mEglCore, encoderCore.getInputSurface(), true);
+            mInputWindowSurface = new WindowSurface(new EglCore(null, 0/*EglCore.FLAG_RECORDABLE *//*| EglCore.FLAG_TRY_GLES3*/), encoderCore.getInputSurface(), true);
             mVideoEncoder = new TextureMovieEncoder2(encoderCore);
         }
 

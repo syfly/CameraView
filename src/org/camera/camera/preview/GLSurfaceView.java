@@ -731,7 +731,7 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
          * @param width
          * @param height
          */
-        void onSurfaceChanged(GL10 gl, int width, int height);
+        void onSurfaceChanged(GL gl, int width, int height);
 
         /**
          * Called to draw the current frame.
@@ -748,9 +748,9 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
          * @param gl the GL interface. Use <code>instanceof</code> to
          * test if the interface supports GL11 or higher interfaces.
          */
-        void onDrawFrame(GL10 gl);
+        void onDrawFrame(GL gl);
         
-        void onDrawFrame(GL10 gl, GLSurfaceView view);
+        void onDrawFrame(GL gl, GLSurfaceView view);
     }
 
     /**
